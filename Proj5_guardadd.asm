@@ -36,8 +36,6 @@ main PROC
 	Invoke ExitProcess,0
 main ENDP
 
-; (insert additional procedures here)
-
 printGreeting PROC
 	push	ebp
 	mov		ebp, esp
@@ -52,5 +50,7 @@ printGreeting PROC
 	pop ebp
 	ret 8
 printGreeting ENDP
+
+
 
 END main
