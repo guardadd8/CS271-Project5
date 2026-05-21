@@ -25,32 +25,56 @@ ARRAYSIZE = DAYS_MEASURED*TEMPS_PER_DAY
 					BYTE	"with descriptive titles.",13,10,0
 
 	tempArray		DWORD ARRAYSIZE	DUP(?)
+	highTempsArray	DWORD DAYS_MEASURED	DUP(?)
+	lowTempsArray	DWORD DAYS_MEASURED	DUP(?)
+	avgHighTemp		DWORD ?
+	avgLowTemp		DWORD ?
 
 .code
 main PROC
-	call Randomize
-	push OFFSET intro1
-	push OFFSET intro2
-	call printGreeting
-	
-	Invoke ExitProcess,0
+	call	Randomize
+	push	OFFSET intro1
+	push	OFFSET intro2
+	call	printGreeting
+
+	push	OFFSET tempArray
+	call	generateTemperatures
+
+	Invoke	ExitProcess,0
 main ENDP
 
 printGreeting PROC
 	push	ebp
 	mov		ebp, esp
-	pushad
 
 	mov		edx, [ebp+8]
 	call	WriteString
 	mov		edx, [ebp+12]
 	call	WriteString
 
-	popad
-	pop ebp
-	ret 8
+	pop		ebp
+	ret		8
 printGreeting ENDP
 
+generateTemperatures PROC
+	push	ebp
+	mov		ebp, esp
+
+	mov		esi, [ebp+8]
+	mov		ecx, ARRAYSIZE
+
+	arrayFill:
+		mov		eax, (MAX_TEMP-MIN_TEMP)+1
+		call	RandomRange
+		add		eax, MIN_TEMP
+		
+		mov		[esi], eax
+		add		esi, TYPE DWORD
+		loop	arrayFill
+
+	pop		ebp
+	ret 4
+generateTemperatures ENDP
 
 
 END main
