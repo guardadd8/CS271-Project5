@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/21/26 11:00:56
+Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/21/26 16:28:18
 7Temperature Statistics Program     (Proj5_guardadd.asm	     Page 1 - 1
 
 
@@ -124,82 +124,118 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/21/26 11:00:56
  00000000  E8 00000000 E		call	Randomize
  00000005  68 0000003F R		push	OFFSET intro2
  0000000A  68 00000000 R		push	OFFSET intro1
- 0000000F  E8 00000027			call	printGreeting
+ 0000000F  E8 0000007A			call	printGreeting
 
  00000014  68 00000143 R		push	OFFSET tempArray
- 00000019  E8 00000034			call	generateTemperatures
-					Invoke	ExitProcess,0
- 0000001E  6A 00	   *	    push   +000000000h
- 00000020  E8 00000000 E   *	    call   ExitProcess
- 00000025  68 00000143 R		push	OFFSET tempArray
- 0000002A  68 000003AB R		push	OFFSET dailyHighs
- 0000002F  E8 00000041			call	findDailyHighs
+ 00000019  E8 00000087			call	generateTemperatures
+
+ 0000001E  68 000003AB R		push	OFFSET dailyHighs
+ 00000023  68 00000143 R		push	OFFSET tempArray
+ 00000028  E8 0000009B			call	findDailyHighs
+					
+					; test
+ 0000002D  A1 000003AB R		mov		eax, dailyHighs[0]
+ 00000032  E8 00000000 E		call	WriteInt
+ 00000037  E8 00000000 E		call	crlf
+ 0000003C  A1 000003AF R		mov		eax, dailyHighs[1*4]
+ 00000041  E8 00000000 E		call	WriteInt
+ 00000046  E8 00000000 E		call	crlf
+ 0000004B  A1 000003B3 R		mov		eax, dailyHighs[2*4]
+ 00000050  E8 00000000 E		call	WriteInt
+ 00000055  E8 00000000 E		call	crlf
+ 0000005A  A1 000003B7 R		mov		eax, dailyHighs[3*4]
+ 0000005F  E8 00000000 E		call	WriteInt
+ 00000064  E8 00000000 E		call	crlf
+ 00000069  A1 000003BB R		mov		eax, dailyHighs[4*4]
+ 0000006E  E8 00000000 E		call	WriteInt
+ 00000073  E8 00000000 E		call	crlf
+ 00000078  A1 000003DF R		mov		eax, dailyHighs[13*4]
+ 0000007D  E8 00000000 E		call	WriteInt
+ 00000082  E8 00000000 E		call	crlf
 
 					Invoke	ExitProcess,0
- 00000034  6A 00	   *	    push   +000000000h
- 00000036  E8 00000000 E   *	    call   ExitProcess
- 0000003B			main ENDP
+ 00000087  6A 00	   *	    push   +000000000h
+ 00000089  E8 00000000 E   *	    call   ExitProcess
+ 0000008E			main ENDP
 
- 0000003B			printGreeting PROC
- 0000003B  55				push	ebp
- 0000003C  8B EC			mov		ebp, esp
+ 0000008E			printGreeting PROC
+ 0000008E  55				push	ebp
+ 0000008F  8B EC			mov		ebp, esp
 
- 0000003E  8B 55 08			mov		edx, [ebp+8]
- 00000041  E8 00000000 E		call	WriteString
- 00000046  8B 55 0C			mov		edx, [ebp+12]
- 00000049  E8 00000000 E		call	WriteString
+ 00000091  8B 55 08			mov		edx, [ebp+8]
+ 00000094  E8 00000000 E		call	WriteString
+ 00000099  8B 55 0C			mov		edx, [ebp+12]
+ 0000009C  E8 00000000 E		call	WriteString
 
- 0000004E  5D				pop		ebp
- 0000004F  C2 0008			ret		8
- 00000052			printGreeting ENDP
+ 000000A1  5D				pop		ebp
+ 000000A2  C2 0008			ret		8
+ 000000A5			printGreeting ENDP
 
- 00000052			generateTemperatures PROC
- 00000052  55				push	ebp
- 00000053  8B EC			mov		ebp, esp
+ 000000A5			generateTemperatures PROC
+ 000000A5  55				push	ebp
+ 000000A6  8B EC			mov		ebp, esp
 
- 00000055  8B 75 08			mov		esi, [ebp+8]
- 00000058  B9 0000009A			mov		ecx, ARRAYSIZE
+ 000000A8  8B 75 08			mov		esi, [ebp+8]
+ 000000AB  B9 0000009A			mov		ecx, ARRAYSIZE
 
- 0000005D				arrayFill:
- 0000005D  B8 0000003D				mov		eax, (MAX_TEMP-MIN_TEMP)+1
- 00000062  E8 00000000 E			call	RandomRange
- 00000067  83 C0 14				add		eax, MIN_TEMP
+ 000000B0				_arrayFill:
+ 000000B0  B8 0000003D				mov		eax, (MAX_TEMP-MIN_TEMP)+1
+ 000000B5  E8 00000000 E			call	RandomRange
+ 000000BA  83 C0 14				add		eax, MIN_TEMP
 						
- 0000006A  89 06				mov		[esi], eax
- 0000006C  83 C6 04				add		esi, TYPE DWORD
- 0000006F  E2 EC				loop	arrayFill
+ 000000BD  89 06				mov		[esi], eax
+ 000000BF  83 C6 04				add		esi, TYPE DWORD
+ 000000C2  E2 EC				loop	_arrayFill
 
- 00000071  5D				pop		ebp
- 00000072  C2 0004			ret 4
- 00000075			generateTemperatures ENDP
+ 000000C4  5D				pop		ebp
+ 000000C5  C2 0004			ret		4
+ 000000C8			generateTemperatures ENDP
 
- 00000075			findDailyHighs PROC
- 00000075  55				push	ebp
- 00000076  8B EC			mov		ebp, esp
+				; traverse 11 rows of tempArray, find highest temp per row, set current dailyHighs index with valuem, if counter is 11/>10 (end of current row),
+				; increase counter for dailyHighs array, reset tempArray counter to 11. Keep going until last tempArray element is seen. Find highest 14 temps.
+ 000000C8			findDailyHighs PROC
+ 000000C8  55				push	ebp
+ 000000C9  8B EC			mov		ebp, esp
 
- 00000078  B9 0000000E			mov		ecx, DAYS_MEASURED
+ 000000CB  8B 75 08			mov		esi, [ebp+8]	; tempArray
+ 000000CE  8B 5D 0C			mov		ebx, [ebp+12]	; dailyHighs
+ 000000D1  BA 00000000			mov		edx, 0			; tempArray row and dailyHighs counter, 0-13 (cover 14 days)
 
- 0000007D				daysLoop:
+ 000000D6				_dayRowLoop:
+ 000000D6  83 FA 0E				cmp		edx, DAYS_MEASURED
+ 000000D9  74 26				je		_finished
 
- 0000007D  51					push	ecx
- 0000007E  B9 0000000B				mov		ecx, TEMPS_PER_DAY
- 00000083					tempsLoop:
-							
+ 000000DB  B8 00000014				mov		eax, MIN_TEMP	; start at '20' to only ever get highest temps for dailyHighs
+ 000000E0  B9 00000000				mov		ecx, 0
 
- 00000083  E2 FE					loop	tempsLoop
+ 000000E5					_tempColumnLoop:
+ 000000E5  83 F9 0B					cmp		ecx, TEMPS_PER_DAY
+ 000000E8  74 0E					je		_rowFinished
 
- 00000085  59					pop		ecx
- 00000086  E2 F5				loop	daysLoop
+ 000000EA  3B 04 8E					cmp		eax, [esi+ecx*4]
+ 000000ED  7C 03					jl		_setNewHigh
 
-					; loop 11 elements at a time for 14 rows and find highest 14 temps
+ 000000EF  41						inc		ecx
+ 000000F0  EB F3					jmp		_tempColumnLoop
 
- 00000088  5D				pop		ebp
- 00000089  C2 0004			ret		4
- 0000008C			findDailyHighs ENDP
+ 000000F2					_setNewHigh:
+ 000000F2  8B 04 8E					mov		eax, [esi+ecx*4]
+ 000000F5  41						inc		ecx
+ 000000F6  EB ED					jmp		_tempColumnLoop
+
+ 000000F8					_rowFinished:
+ 000000F8  89 04 93					mov		[ebx+edx*4], eax
+ 000000FB  83 C6 2C					add		esi, TEMPS_PER_DAY * 4
+ 000000FE  42						inc		edx
+ 000000FF  EB D5					jmp		_dayRowLoop
+ 00000101				_finished:
+ 00000101  5D					pop		ebp
+ 00000102  C2 0008				ret		8
+ 00000105			findDailyHighs ENDP
 
 
 				END main
-Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/21/26 11:00:56
+Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/21/26 16:28:18
 7Temperature Statistics Program     (Proj5_guardadd.asm	     Symbols 2 - 1
 
 
@@ -294,7 +330,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000423 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000008C Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000105 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -401,13 +437,16 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-findDailyHighs . . . . . . . . .	P Near	 00000075 _TEXT	Length= 00000017 Public STDCALL
-  daysLoop . . . . . . . . . . .	L Near	 0000007D _TEXT	
-  tempsLoop  . . . . . . . . . .	L Near	 00000083 _TEXT	
-generateTemperatures . . . . . .	P Near	 00000052 _TEXT	Length= 00000023 Public STDCALL
-  arrayFill  . . . . . . . . . .	L Near	 0000005D _TEXT	
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000003B Public STDCALL
-printGreeting  . . . . . . . . .	P Near	 0000003B _TEXT	Length= 00000017 Public STDCALL
+findDailyHighs . . . . . . . . .	P Near	 000000C8 _TEXT	Length= 0000003D Public STDCALL
+  _dayRowLoop  . . . . . . . . .	L Near	 000000D6 _TEXT	
+  _tempColumnLoop  . . . . . . .	L Near	 000000E5 _TEXT	
+  _setNewHigh  . . . . . . . . .	L Near	 000000F2 _TEXT	
+  _rowFinished . . . . . . . . .	L Near	 000000F8 _TEXT	
+  _finished  . . . . . . . . . .	L Near	 00000101 _TEXT	
+generateTemperatures . . . . . .	P Near	 000000A5 _TEXT	Length= 00000023 Public STDCALL
+  _arrayFill . . . . . . . . . .	L Near	 000000B0 _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000008E Public STDCALL
+printGreeting  . . . . . . . . .	P Near	 0000008E _TEXT	Length= 00000017 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C

@@ -43,6 +43,26 @@ main PROC
 	push	OFFSET dailyHighs
 	push	OFFSET tempArray
 	call	findDailyHighs
+	
+	; test
+	mov		eax, dailyHighs[0]
+	call	WriteInt
+	call	crlf
+	mov		eax, dailyHighs[1*4]
+	call	WriteInt
+	call	crlf
+	mov		eax, dailyHighs[2*4]
+	call	WriteInt
+	call	crlf
+	mov		eax, dailyHighs[3*4]
+	call	WriteInt
+	call	crlf
+	mov		eax, dailyHighs[4*4]
+	call	WriteInt
+	call	crlf
+	mov		eax, dailyHighs[13*4]
+	call	WriteInt
+	call	crlf
 
 	Invoke	ExitProcess,0
 main ENDP
@@ -80,45 +100,46 @@ generateTemperatures PROC
 	ret		4
 generateTemperatures ENDP
 
+; traverse 11 rows of tempArray, find highest temp per row, set current dailyHighs index with valuem, if counter is 11/>10 (end of current row),
+; increase counter for dailyHighs array, reset tempArray counter to 11. Keep going until last tempArray element is seen. Find highest 14 temps.
 findDailyHighs PROC
 	push	ebp
 	mov		ebp, esp
 
-	mov		esi, [ebp+8]
-	mov		ebx, [ebp+12]
-	mov		eax, MIN_TEMP
-	mov		ecx, TEMPS_PER_DAY-TEMPS_PER_DAY ; tempArray counter
-	mov		edx, DAYS_MEASURED-DAYS_MEASURED ; dailyHighs counter
+	mov		esi, [ebp+8]	; tempArray
+	mov		ebx, [ebp+12]	; dailyHighs
+	mov		edx, 0			; tempArray row and dailyHighs counter, 0-13 (cover 14 days)
 
-	_daysLoop:
-		
-		_tempsLoop:
+	_dayRowLoop:
+		cmp		edx, DAYS_MEASURED
+		je		_finished
+
+		mov		eax, MIN_TEMP	; start at '20' to only ever get highest temps for dailyHighs
+		mov		ecx, 0
+
+		_tempColumnLoop:
+			cmp		ecx, TEMPS_PER_DAY
+			je		_rowFinished
+
+			cmp		eax, [esi+ecx*4]
+			jl		_setNewHigh
+
+			inc		ecx
+			jmp		_tempColumnLoop
 
 		_setNewHigh:
+			mov		eax, [esi+ecx*4]
+			inc		ecx
+			jmp		_tempColumnLoop
 
+		_rowFinished:
+			mov		[ebx+edx*4], eax
+			add		esi, TEMPS_PER_DAY * 4
+			inc		edx
+			jmp		_dayRowLoop
 	_finished:
 		pop		ebp
 		ret		8
-
-		cmp		eax, [esi+edx*11]
-		ja		setNewHigh
-
-
-		add		esi, TYPE DWORD
-		cmp		ecx, DAYS_MEASURED
-		je		daysLoop
-
-	setNewHigh:
-		mov		[ebx+edx*4], eax
-		add		ebx, TYPE DWORD
-		add		esi, TYPE DWORD
-		cmp		ecx, DAYS_MEASURED
-		je		daysLoop
-
-		; traverse 11 rows of tempArray, find highest temp per row, set current dailyHighs index with valuem, if counter is 11/>10 (end of current row),
-		; increase counter for dailyHighs array, reset tempArray counter to 11. Keep going until last tempArray element is seen. Find highest 14 temps.
-
-
 findDailyHighs ENDP
 
 
