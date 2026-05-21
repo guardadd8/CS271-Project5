@@ -25,20 +25,24 @@ ARRAYSIZE = DAYS_MEASURED*TEMPS_PER_DAY
 					BYTE	"with descriptive titles.",13,10,0
 
 	tempArray		DWORD ARRAYSIZE	DUP(?)
-	highTempsArray	DWORD DAYS_MEASURED	DUP(?)
-	lowTempsArray	DWORD DAYS_MEASURED	DUP(?)
+	dailyHighs		DWORD DAYS_MEASURED	DUP(?)
+	dailyLows		DWORD DAYS_MEASURED	DUP(?)
 	avgHighTemp		DWORD ?
 	avgLowTemp		DWORD ?
 
 .code
 main PROC
 	call	Randomize
-	push	OFFSET intro1
 	push	OFFSET intro2
+	push	OFFSET intro1
 	call	printGreeting
 
 	push	OFFSET tempArray
 	call	generateTemperatures
+
+	push	OFFSET dailyHighs
+	push	OFFSET tempArray
+	call	findDailyHighs
 
 	Invoke	ExitProcess,0
 main ENDP
@@ -63,18 +67,59 @@ generateTemperatures PROC
 	mov		esi, [ebp+8]
 	mov		ecx, ARRAYSIZE
 
-	arrayFill:
+	_arrayFill:
 		mov		eax, (MAX_TEMP-MIN_TEMP)+1
 		call	RandomRange
 		add		eax, MIN_TEMP
 		
 		mov		[esi], eax
 		add		esi, TYPE DWORD
-		loop	arrayFill
+		loop	_arrayFill
 
 	pop		ebp
-	ret 4
+	ret		4
 generateTemperatures ENDP
+
+findDailyHighs PROC
+	push	ebp
+	mov		ebp, esp
+
+	mov		esi, [ebp+8]
+	mov		ebx, [ebp+12]
+	mov		eax, MIN_TEMP
+	mov		ecx, TEMPS_PER_DAY-TEMPS_PER_DAY ; tempArray counter
+	mov		edx, DAYS_MEASURED-DAYS_MEASURED ; dailyHighs counter
+
+	_daysLoop:
+		
+		_tempsLoop:
+
+		_setNewHigh:
+
+	_finished:
+		pop		ebp
+		ret		8
+
+		cmp		eax, [esi+edx*11]
+		ja		setNewHigh
+
+
+		add		esi, TYPE DWORD
+		cmp		ecx, DAYS_MEASURED
+		je		daysLoop
+
+	setNewHigh:
+		mov		[ebx+edx*4], eax
+		add		ebx, TYPE DWORD
+		add		esi, TYPE DWORD
+		cmp		ecx, DAYS_MEASURED
+		je		daysLoop
+
+		; traverse 11 rows of tempArray, find highest temp per row, set current dailyHighs index with valuem, if counter is 11/>10 (end of current row),
+		; increase counter for dailyHighs array, reset tempArray counter to 11. Keep going until last tempArray element is seen. Find highest 14 temps.
+
+
+findDailyHighs ENDP
 
 
 END main
