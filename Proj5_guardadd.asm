@@ -27,8 +27,8 @@ ARRAYSIZE = DAYS_MEASURED*TEMPS_PER_DAY
 	tempArray		DWORD ARRAYSIZE	DUP(?)
 	dailyHighs		DWORD DAYS_MEASURED	DUP(?)
 	dailyLows		DWORD DAYS_MEASURED	DUP(?)
-	avgHighTemp		DWORD ?
-	avgLowTemp		DWORD ?
+	averageHigh 	DWORD ?
+	averageLow		DWORD ?
 
 .code
 main PROC
@@ -43,26 +43,16 @@ main PROC
 	push	OFFSET dailyHighs
 	push	OFFSET tempArray
 	call	findDailyHighs
-	
-	; test
-	mov		eax, dailyHighs[0]
-	call	WriteInt
-	call	crlf
-	mov		eax, dailyHighs[1*4]
-	call	WriteInt
-	call	crlf
-	mov		eax, dailyHighs[2*4]
-	call	WriteInt
-	call	crlf
-	mov		eax, dailyHighs[3*4]
-	call	WriteInt
-	call	crlf
-	mov		eax, dailyHighs[4*4]
-	call	WriteInt
-	call	crlf
-	mov		eax, dailyHighs[13*4]
-	call	WriteInt
-	call	crlf
+
+	push	OFFSET dailyLows
+	push	OFFSET tempArray
+	call	findDailyLows
+
+	push	OFFSET averageLow
+	push	OFFSET averageHigh
+	push	OFFSET dailyLows
+	push	OFFSET dailyHighs
+	call	calcAverageLowHighTemps
 
 	Invoke	ExitProcess,0
 main ENDP
@@ -106,34 +96,34 @@ findDailyHighs PROC
 	push	ebp
 	mov		ebp, esp
 
-	mov		esi, [ebp+8]	; tempArray
-	mov		ebx, [ebp+12]	; dailyHighs
-	mov		edx, 0			; tempArray row and dailyHighs counter, 0-13 (cover 14 days)
+	mov		esi, [ebp+8]	; tempArray address
+	mov		ebx, [ebp+12]	; dailyHighs address
+	mov		edx, 0			; day counter (0 to DAYS_MEASURED - 1)
 
 	_dayRowLoop:
 		cmp		edx, DAYS_MEASURED
 		je		_finished
 
-		mov		eax, MIN_TEMP	; start at '20' to only ever get highest temps for dailyHighs
+		mov		eax, MIN_TEMP	; start at min temp '20' to only ever get highest temps
 		mov		ecx, 0
 
 		_tempColumnLoop:
 			cmp		ecx, TEMPS_PER_DAY
 			je		_rowFinished
 
-			cmp		eax, [esi+ecx*4]
+			cmp		eax, [esi + ecx * 4]
 			jl		_setNewHigh
 
 			inc		ecx
 			jmp		_tempColumnLoop
 
 		_setNewHigh:
-			mov		eax, [esi+ecx*4]
+			mov		eax, [esi + ecx * 4]
 			inc		ecx
 			jmp		_tempColumnLoop
 
 		_rowFinished:
-			mov		[ebx+edx*4], eax
+			mov		[ebx + edx * 4], eax
 			add		esi, TEMPS_PER_DAY * 4
 			inc		edx
 			jmp		_dayRowLoop
@@ -142,5 +132,72 @@ findDailyHighs PROC
 		ret		8
 findDailyHighs ENDP
 
+findDailyLows PROC
+	push	ebp
+	mov		ebp, esp
+
+	mov		esi, [ebp+8]	; tempArray base address
+	mov		ebx, [ebp+12]	; dailyLows base address
+	mov		edx, 0			; day counter (0 to DAYS_MEASURED - 1)
+
+	_dayRowLoop:
+		cmp		edx, DAYS_MEASURED
+		je		_finished
+		
+		mov		eax, MAX_TEMP	; start at max temp '80' to only ever get lowest temps
+		mov		ecx, 0			
+
+		_tempColumnLoop:
+			cmp		ecx, TEMPS_PER_DAY
+			je		_rowFinished
+
+			cmp		eax, [esi + ecx * 4]
+			jg		_setNewLow	
+
+			inc		ecx
+			jmp		_tempColumnLoop
+
+		_setNewLow:
+			mov		eax, [esi + ecx * 4]
+			inc		ecx
+			jmp		_tempColumnLoop
+
+		_rowFinished:
+		mov		[ebx + edx * 4], eax  ; Saves the definitive lowest temp
+		add		esi, TEMPS_PER_DAY * 4
+		inc		edx
+		jmp		_dayRowLoop
+
+	_finished:
+		pop		ebp
+		ret		8
+findDailyLows ENDP
+
+calcAverageLowHighTemps PROC
+	push	ebp
+	mov		ebp, esp
+	
+	mov		esi, [ebp+8]	; dailyHighs array address
+	mov		edi, [ebp+12]	; dailyLows array address
+	mov		eax, 0			; highs accumulator
+	mov		ebx, 0			; lows accumulator
+	mov		ecx, 0
+
+	_sumHighAndLow:		
+		add		eax, [esi + ecx * 4]	; accumulated highs
+		add		ebx, [edi + ecx * 4]	; accumulated lows
+
+		inc		ecx
+		cmp		ecx, 14
+		je		_calcAverages
+		jmp		_sumHighAndLow
+
+	_calcAverages:
+		; TODO: sign-extend, divide calculate high average (truncate), calculate low average (truncate, move ebx to eax)
+
+	_finished:
+		pop		ebp
+		ret		16
+calcAverageLowHighTemps ENDP
 
 END main
