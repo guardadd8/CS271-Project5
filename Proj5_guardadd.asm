@@ -54,6 +54,8 @@ main PROC
 	push	OFFSET dailyHighs
 	call	calcAverageLowHighTemps
 
+	
+
 	Invoke	ExitProcess,0
 main ENDP
 
@@ -188,16 +190,28 @@ calcAverageLowHighTemps PROC
 		add		ebx, [edi + ecx * 4]	; accumulated lows
 
 		inc		ecx
-		cmp		ecx, 14
-		je		_calcAverages
-		jmp		_sumHighAndLow
+		cmp		ecx, DAYS_MEASURED
+		jl		_sumHighAndLow
 
 	_calcAverages:
-		; TODO: sign-extend, divide calculate high average (truncate), calculate low average (truncate, move ebx to eax)
+		mov		ecx, DAYS_MEASURED
 
-	_finished:
-		pop		ebp
-		ret		16
+		cdq
+		div		ecx
+		mov		edx, [ebp+16]
+		mov		[edx], eax
+
+		cdq
+		mov		eax, ebx
+		div		ecx
+		mov		edx, [ebp+20]
+		mov		[edx], eax
+
+	pop		ebp
+	ret		16
 calcAverageLowHighTemps ENDP
+
+displayTempArray PROC
+displayTempArray ENDP
 
 END main

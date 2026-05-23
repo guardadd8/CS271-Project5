@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/22/26 10:02:56
+Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/22/26 19:36:50
 7Temperature Statistics Program     (Proj5_guardadd.asm	     Page 1 - 1
 
 
@@ -116,152 +116,197 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/22/26 10:02:56
  000003E3  0000000E [			dailyLows		DWORD DAYS_MEASURED	DUP(?)
 	    00000000
 	   ]
- 0000041B 00000000			avgHighTemp		DWORD ?
- 0000041F 00000000			avgLowTemp		DWORD ?
+ 0000041B 00000000			averageHigh 	DWORD ?
+ 0000041F 00000000			averageLow		DWORD ?
 
  00000000			.code
  00000000			main PROC
  00000000  E8 00000000 E		call	Randomize
  00000005  68 0000003F R		push	OFFSET intro2
  0000000A  68 00000000 R		push	OFFSET intro1
- 0000000F  E8 0000002F			call	printGreeting
+ 0000000F  E8 0000005C			call	printGreeting
 
  00000014  68 00000143 R		push	OFFSET tempArray
- 00000019  E8 0000003C			call	generateTemperatures
+ 00000019  E8 00000069			call	generateTemperatures
 
  0000001E  68 000003AB R		push	OFFSET dailyHighs
  00000023  68 00000143 R		push	OFFSET tempArray
- 00000028  E8 00000050			call	findDailyHighs
+ 00000028  E8 0000007D			call	findDailyHighs
 
  0000002D  68 000003E3 R		push	OFFSET dailyLows
  00000032  68 00000143 R		push	OFFSET tempArray
- 00000037  E8 0000007E			call	findDailyLows
+ 00000037  E8 000000AB			call	findDailyLows
 
+ 0000003C  68 0000041F R		push	OFFSET averageLow
+ 00000041  68 0000041B R		push	OFFSET averageHigh
+ 00000046  68 000003E3 R		push	OFFSET dailyLows
+ 0000004B  68 000003AB R		push	OFFSET dailyHighs
+ 00000050  E8 000000CF			call	calcAverageLowHighTemps
 
+ 00000055  A1 0000041B R		mov eax, averageHigh
+ 0000005A  E8 00000000 E		call WriteInt
+ 0000005F  A1 0000041F R		mov eax, averageLow
+ 00000064  E8 00000000 E		call WriteInt
 
 					Invoke	ExitProcess,0
- 0000003C  6A 00	   *	    push   +000000000h
- 0000003E  E8 00000000 E   *	    call   ExitProcess
- 00000043			main ENDP
+ 00000069  6A 00	   *	    push   +000000000h
+ 0000006B  E8 00000000 E   *	    call   ExitProcess
+ 00000070			main ENDP
 
- 00000043			printGreeting PROC
- 00000043  55				push	ebp
- 00000044  8B EC			mov		ebp, esp
+ 00000070			printGreeting PROC
+ 00000070  55				push	ebp
+ 00000071  8B EC			mov		ebp, esp
 
- 00000046  8B 55 08			mov		edx, [ebp+8]
- 00000049  E8 00000000 E		call	WriteString
- 0000004E  8B 55 0C			mov		edx, [ebp+12]
- 00000051  E8 00000000 E		call	WriteString
+ 00000073  8B 55 08			mov		edx, [ebp+8]
+ 00000076  E8 00000000 E		call	WriteString
+ 0000007B  8B 55 0C			mov		edx, [ebp+12]
+ 0000007E  E8 00000000 E		call	WriteString
 
- 00000056  5D				pop		ebp
- 00000057  C2 0008			ret		8
- 0000005A			printGreeting ENDP
+ 00000083  5D				pop		ebp
+ 00000084  C2 0008			ret		8
+ 00000087			printGreeting ENDP
 
- 0000005A			generateTemperatures PROC
- 0000005A  55				push	ebp
- 0000005B  8B EC			mov		ebp, esp
+ 00000087			generateTemperatures PROC
+ 00000087  55				push	ebp
+ 00000088  8B EC			mov		ebp, esp
 
- 0000005D  8B 75 08			mov		esi, [ebp+8]
- 00000060  B9 0000009A			mov		ecx, ARRAYSIZE
+ 0000008A  8B 75 08			mov		esi, [ebp+8]
+ 0000008D  B9 0000009A			mov		ecx, ARRAYSIZE
 
- 00000065				_arrayFill:
- 00000065  B8 0000003D				mov		eax, (MAX_TEMP-MIN_TEMP)+1
- 0000006A  E8 00000000 E			call	RandomRange
- 0000006F  83 C0 14				add		eax, MIN_TEMP
+ 00000092				_arrayFill:
+ 00000092  B8 0000003D				mov		eax, (MAX_TEMP-MIN_TEMP)+1
+ 00000097  E8 00000000 E			call	RandomRange
+ 0000009C  83 C0 14				add		eax, MIN_TEMP
 						
- 00000072  89 06				mov		[esi], eax
- 00000074  83 C6 04				add		esi, TYPE DWORD
- 00000077  E2 EC				loop	_arrayFill
+ 0000009F  89 06				mov		[esi], eax
+ 000000A1  83 C6 04				add		esi, TYPE DWORD
+ 000000A4  E2 EC				loop	_arrayFill
 
- 00000079  5D				pop		ebp
- 0000007A  C2 0004			ret		4
- 0000007D			generateTemperatures ENDP
+ 000000A6  5D				pop		ebp
+ 000000A7  C2 0004			ret		4
+ 000000AA			generateTemperatures ENDP
 
 				; traverse 11 rows of tempArray, find highest temp per row, set current dailyHighs index with valuem, if counter is 11/>10 (end of current row),
 				; increase counter for dailyHighs array, reset tempArray counter to 11. Keep going until last tempArray element is seen. Find highest 14 temps.
- 0000007D			findDailyHighs PROC
- 0000007D  55				push	ebp
- 0000007E  8B EC			mov		ebp, esp
+ 000000AA			findDailyHighs PROC
+ 000000AA  55				push	ebp
+ 000000AB  8B EC			mov		ebp, esp
 
- 00000080  8B 75 08			mov		esi, [ebp+8]	; tempArray address
- 00000083  8B 5D 0C			mov		ebx, [ebp+12]	; dailyHighs address
- 00000086  BA 00000000			mov		edx, 0			; day counter (0 to DAYS_MEASURED - 1)
+ 000000AD  8B 75 08			mov		esi, [ebp+8]	; tempArray address
+ 000000B0  8B 5D 0C			mov		ebx, [ebp+12]	; dailyHighs address
+ 000000B3  BA 00000000			mov		edx, 0			; day counter (0 to DAYS_MEASURED - 1)
 
- 0000008B				_dayRowLoop:
- 0000008B  83 FA 0E				cmp		edx, DAYS_MEASURED
- 0000008E  74 26				je		_finished
+ 000000B8				_dayRowLoop:
+ 000000B8  83 FA 0E				cmp		edx, DAYS_MEASURED
+ 000000BB  74 26				je		_finished
 
- 00000090  B8 00000014				mov		eax, MIN_TEMP	; start at min temp '20' to only ever get highest temps
- 00000095  B9 00000000				mov		ecx, 0
+ 000000BD  B8 00000014				mov		eax, MIN_TEMP	; start at min temp '20' to only ever get highest temps
+ 000000C2  B9 00000000				mov		ecx, 0
 
- 0000009A					_tempColumnLoop:
- 0000009A  83 F9 0B					cmp		ecx, TEMPS_PER_DAY
- 0000009D  74 0E					je		_rowFinished
+ 000000C7					_tempColumnLoop:
+ 000000C7  83 F9 0B					cmp		ecx, TEMPS_PER_DAY
+ 000000CA  74 0E					je		_rowFinished
 
- 0000009F  3B 04 8E					cmp		eax, [esi + ecx * 4]
- 000000A2  7C 03					jl		_setNewHigh
+ 000000CC  3B 04 8E					cmp		eax, [esi + ecx * 4]
+ 000000CF  7C 03					jl		_setNewHigh
 
- 000000A4  41						inc		ecx
- 000000A5  EB F3					jmp		_tempColumnLoop
+ 000000D1  41						inc		ecx
+ 000000D2  EB F3					jmp		_tempColumnLoop
 
- 000000A7					_setNewHigh:
- 000000A7  8B 04 8E					mov		eax, [esi + ecx * 4]
- 000000AA  41						inc		ecx
- 000000AB  EB ED					jmp		_tempColumnLoop
+ 000000D4					_setNewHigh:
+ 000000D4  8B 04 8E					mov		eax, [esi + ecx * 4]
+ 000000D7  41						inc		ecx
+ 000000D8  EB ED					jmp		_tempColumnLoop
 
- 000000AD					_rowFinished:
- 000000AD  89 04 93					mov		[ebx + edx * 4], eax
- 000000B0  83 C6 2C					add		esi, TEMPS_PER_DAY * 4
- 000000B3  42						inc		edx
- 000000B4  EB D5					jmp		_dayRowLoop
- 000000B6				_finished:
- 000000B6  5D					pop		ebp
- 000000B7  C2 0008				ret		8
- 000000BA			findDailyHighs ENDP
+ 000000DA					_rowFinished:
+ 000000DA  89 04 93					mov		[ebx + edx * 4], eax
+ 000000DD  83 C6 2C					add		esi, TEMPS_PER_DAY * 4
+ 000000E0  42						inc		edx
+ 000000E1  EB D5					jmp		_dayRowLoop
+ 000000E3				_finished:
+ 000000E3  5D					pop		ebp
+ 000000E4  C2 0008				ret		8
+ 000000E7			findDailyHighs ENDP
 
- 000000BA			findDailyLows PROC
- 000000BA  55				push	ebp
- 000000BB  8B EC			mov		ebp, esp
+ 000000E7			findDailyLows PROC
+ 000000E7  55				push	ebp
+ 000000E8  8B EC			mov		ebp, esp
 
- 000000BD  8B 75 08			mov		esi, [ebp+8]	; tempArray base address
- 000000C0  8B 5D 0C			mov		ebx, [ebp+12]	; dailyLows base address
- 000000C3  BA 00000000			mov		edx, 0			; day counter (0 to DAYS_MEASURED - 1)
+ 000000EA  8B 75 08			mov		esi, [ebp+8]	; tempArray base address
+ 000000ED  8B 5D 0C			mov		ebx, [ebp+12]	; dailyLows base address
+ 000000F0  BA 00000000			mov		edx, 0			; day counter (0 to DAYS_MEASURED - 1)
 
- 000000C8				_dayRowLoop:
- 000000C8  83 FA 0E				cmp		edx, DAYS_MEASURED
- 000000CB  74 26				je		_finished
+ 000000F5				_dayRowLoop:
+ 000000F5  83 FA 0E				cmp		edx, DAYS_MEASURED
+ 000000F8  74 26				je		_finished
 						
- 000000CD  B8 00000050				mov		eax, MAX_TEMP	; start at max tmep '80' to only ever get lowest temps
- 000000D2  B9 00000000				mov		ecx, 0			
+ 000000FA  B8 00000050				mov		eax, MAX_TEMP	; start at max temp '80' to only ever get lowest temps
+ 000000FF  B9 00000000				mov		ecx, 0			
 
- 000000D7					_tempColumnLoop:
- 000000D7  83 F9 0B					cmp		ecx, TEMPS_PER_DAY
- 000000DA  74 0E					je		_rowFinished
+ 00000104					_tempColumnLoop:
+ 00000104  83 F9 0B					cmp		ecx, TEMPS_PER_DAY
+ 00000107  74 0E					je		_rowFinished
 
- 000000DC  3B 04 8E					cmp		eax, [esi + ecx * 4]
- 000000DF  7F 03					jg		_setNewLow	
+ 00000109  3B 04 8E					cmp		eax, [esi + ecx * 4]
+ 0000010C  7F 03					jg		_setNewLow	
 
- 000000E1  41						inc		ecx
- 000000E2  EB F3					jmp		_tempColumnLoop
+ 0000010E  41						inc		ecx
+ 0000010F  EB F3					jmp		_tempColumnLoop
 
- 000000E4					_setNewLow:
- 000000E4  8B 04 8E					mov		eax, [esi + ecx * 4]
- 000000E7  41						inc		ecx
- 000000E8  EB ED					jmp		_tempColumnLoop
+ 00000111					_setNewLow:
+ 00000111  8B 04 8E					mov		eax, [esi + ecx * 4]
+ 00000114  41						inc		ecx
+ 00000115  EB ED					jmp		_tempColumnLoop
 
- 000000EA					_rowFinished:
- 000000EA  89 04 93				mov		[ebx + edx * 4], eax  ; Saves the definitive lowest temp
- 000000ED  83 C6 2C				add		esi, TEMPS_PER_DAY * 4
- 000000F0  42					inc		edx
- 000000F1  EB D5				jmp		_dayRowLoop
+ 00000117					_rowFinished:
+ 00000117  89 04 93				mov		[ebx + edx * 4], eax  ; Saves the definitive lowest temp
+ 0000011A  83 C6 2C				add		esi, TEMPS_PER_DAY * 4
+ 0000011D  42					inc		edx
+ 0000011E  EB D5				jmp		_dayRowLoop
 
- 000000F3				_finished:
- 000000F3  5D					pop		ebp
- 000000F4  C2 0008				ret		8
- 000000F7			findDailyLows ENDP
+ 00000120				_finished:
+ 00000120  5D					pop		ebp
+ 00000121  C2 0008				ret		8
+ 00000124			findDailyLows ENDP
+
+ 00000124			calcAverageLowHighTemps PROC
+ 00000124  55				push	ebp
+ 00000125  8B EC			mov		ebp, esp
+					
+ 00000127  8B 75 08			mov		esi, [ebp+8]	; dailyHighs array address
+ 0000012A  8B 7D 0C			mov		edi, [ebp+12]	; dailyLows array address
+ 0000012D  B8 00000000			mov		eax, 0			; highs accumulator
+ 00000132  BB 00000000			mov		ebx, 0			; lows accumulator
+ 00000137  B9 00000000			mov		ecx, 0
+
+ 0000013C				_sumHighAndLow:		
+ 0000013C  03 04 8E				add		eax, [esi + ecx * 4]	; accumulated highs
+ 0000013F  03 1C 8F				add		ebx, [edi + ecx * 4]	; accumulated lows
+
+ 00000142  41					inc		ecx
+ 00000143  83 F9 0E				cmp		ecx, DAYS_MEASURED
+ 00000146  7C F4				jl		_sumHighAndLow
+
+ 00000148				_calcAverages:
+ 00000148  B9 0000000E				mov		ecx, DAYS_MEASURED
+
+ 0000014D  99					cdq
+ 0000014E  F7 F1				div		ecx
+ 00000150  8B 55 10				mov		edx, [ebp+16]
+ 00000153  89 02				mov		[edx], eax
+
+ 00000155  99					cdq
+ 00000156  8B C3				mov		eax, ebx
+ 00000158  F7 F1				div		ecx
+ 0000015A  8B 55 14				mov		edx, [ebp+20]
+ 0000015D  89 02				mov		[edx], eax
+
+ 0000015F  5D				pop		ebp
+ 00000160  C2 0010			ret		16
+ 00000163			calcAverageLowHighTemps ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/22/26 10:02:56
+Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/22/26 19:36:50
 7Temperature Statistics Program     (Proj5_guardadd.asm	     Symbols 2 - 1
 
 
@@ -356,7 +401,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 00000423 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000000F7 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000163 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -463,22 +508,25 @@ WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-findDailyHighs . . . . . . . . .	P Near	 0000007D _TEXT	Length= 0000003D Public STDCALL
-  _dayRowLoop  . . . . . . . . .	L Near	 0000008B _TEXT	
-  _tempColumnLoop  . . . . . . .	L Near	 0000009A _TEXT	
-  _setNewHigh  . . . . . . . . .	L Near	 000000A7 _TEXT	
-  _rowFinished . . . . . . . . .	L Near	 000000AD _TEXT	
-  _finished  . . . . . . . . . .	L Near	 000000B6 _TEXT	
-findDailyLows  . . . . . . . . .	P Near	 000000BA _TEXT	Length= 0000003D Public STDCALL
-  _dayRowLoop  . . . . . . . . .	L Near	 000000C8 _TEXT	
-  _tempColumnLoop  . . . . . . .	L Near	 000000D7 _TEXT	
-  _setNewLow . . . . . . . . . .	L Near	 000000E4 _TEXT	
-  _rowFinished . . . . . . . . .	L Near	 000000EA _TEXT	
-  _finished  . . . . . . . . . .	L Near	 000000F3 _TEXT	
-generateTemperatures . . . . . .	P Near	 0000005A _TEXT	Length= 00000023 Public STDCALL
-  _arrayFill . . . . . . . . . .	L Near	 00000065 _TEXT	
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000043 Public STDCALL
-printGreeting  . . . . . . . . .	P Near	 00000043 _TEXT	Length= 00000017 Public STDCALL
+calcAverageLowHighTemps  . . . .	P Near	 00000124 _TEXT	Length= 0000003F Public STDCALL
+  _sumHighAndLow . . . . . . . .	L Near	 0000013C _TEXT	
+  _calcAverages  . . . . . . . .	L Near	 00000148 _TEXT	
+findDailyHighs . . . . . . . . .	P Near	 000000AA _TEXT	Length= 0000003D Public STDCALL
+  _dayRowLoop  . . . . . . . . .	L Near	 000000B8 _TEXT	
+  _tempColumnLoop  . . . . . . .	L Near	 000000C7 _TEXT	
+  _setNewHigh  . . . . . . . . .	L Near	 000000D4 _TEXT	
+  _rowFinished . . . . . . . . .	L Near	 000000DA _TEXT	
+  _finished  . . . . . . . . . .	L Near	 000000E3 _TEXT	
+findDailyLows  . . . . . . . . .	P Near	 000000E7 _TEXT	Length= 0000003D Public STDCALL
+  _dayRowLoop  . . . . . . . . .	L Near	 000000F5 _TEXT	
+  _tempColumnLoop  . . . . . . .	L Near	 00000104 _TEXT	
+  _setNewLow . . . . . . . . . .	L Near	 00000111 _TEXT	
+  _rowFinished . . . . . . . . .	L Near	 00000117 _TEXT	
+  _finished  . . . . . . . . . .	L Near	 00000120 _TEXT	
+generateTemperatures . . . . . .	P Near	 00000087 _TEXT	Length= 00000023 Public STDCALL
+  _arrayFill . . . . . . . . . .	L Near	 00000092 _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000070 Public STDCALL
+printGreeting  . . . . . . . . .	P Near	 00000070 _TEXT	Length= 00000017 Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -702,8 +750,8 @@ VK_UP  . . . . . . . . . . . . .	Number	 00000026h
 WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-avgHighTemp  . . . . . . . . . .	DWord	 0000041B _DATA	
-avgLowTemp . . . . . . . . . . .	DWord	 0000041F _DATA	
+averageHigh  . . . . . . . . . .	DWord	 0000041B _DATA	
+averageLow . . . . . . . . . . .	DWord	 0000041F _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
