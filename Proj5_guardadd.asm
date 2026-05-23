@@ -22,7 +22,13 @@ ARRAYSIZE = DAYS_MEASURED*TEMPS_PER_DAY
 	intro2			BYTE	"This program generates a series of temperature readings, X per day for Y days",13,10
 					BYTE	"(depending on CONSTANTs), and performs some basic statistics on them: daily",13,10
 					BYTE	"high and low and average high and low temps. It then prints these results, ",13,10
-					BYTE	"with descriptive titles.",13,10,0
+					BYTE	"with descriptive titles.",13,10,13,10,0
+	allTempsMsg		BYTE	"Temperature readings:",13,10,0
+	highestTempsMsg	BYTE	"Highest daily temps:",13,10,0
+	lowestTempsMsg	BYTE	"Lowest daily temps:",13,10,0
+	avgHighTempMsg	BYTE	"The (truncated) average high temperature was: ",0
+	avgLowTempMsg	BYTE	"The (truncated) average low temperature was: ",0
+	goodbyeMsg		BYTE	"Thanks for using Temperature Statistics Program. Goodbye.",0
 
 	tempArray		DWORD ARRAYSIZE	DUP(?)
 	dailyHighs		DWORD DAYS_MEASURED	DUP(?)
@@ -54,7 +60,34 @@ main PROC
 	push	OFFSET dailyHighs
 	call	calcAverageLowHighTemps
 
-	
+	push	TEMPS_PER_DAY
+	push	DAYS_MEASURED
+	push	OFFSET tempArray
+	push	OFFSET allTempsMsg
+	call	displayTempArray
+
+	push	DAYS_MEASURED
+	push	1
+	push	OFFSET dailyHighs
+	push	OFFSET highestTempsMsg
+	call	displayTempArray
+
+	push	DAYS_MEASURED
+	push	1
+	push	OFFSET dailyLows
+	push	OFFSET lowestTempsMsg
+	call	displayTempArray
+
+	push	averageHigh
+	push	OFFSET avgHighTempMsg
+	call	displayTempWithString
+
+	push	averageLow
+	push	OFFSET avgLowTempMsg
+	call	displayTempWithString
+
+	push	OFFSET goodbyeMsg
+	call	goodbye
 
 	Invoke	ExitProcess,0
 main ENDP
@@ -126,7 +159,7 @@ findDailyHighs PROC
 
 		_rowFinished:
 			mov		[ebx + edx * 4], eax
-			add		esi, TEMPS_PER_DAY * 4
+			add		esi, TEMPS_PER_DAY * TYPE DWORD
 			inc		edx
 			jmp		_dayRowLoop
 	_finished:
@@ -166,7 +199,7 @@ findDailyLows PROC
 
 		_rowFinished:
 		mov		[ebx + edx * 4], eax  ; Saves the definitive lowest temp
-		add		esi, TEMPS_PER_DAY * 4
+		add		esi, TEMPS_PER_DAY * TYPE DWORD
 		inc		edx
 		jmp		_dayRowLoop
 
@@ -212,6 +245,69 @@ calcAverageLowHighTemps PROC
 calcAverageLowHighTemps ENDP
 
 displayTempArray PROC
+	push	ebp
+	mov		ebp, esp
+
+	mov		esi, [ebp+12]	; tempArray address
+	mov		ecx, 0			; column counter	
+	mov		ebx, 0			; row counter
+
+	mov		edx, [ebp+8]
+	call	WriteString
+	_displayArrayRow:
+		cmp		ebx, [ebp+16]
+		jge		_finished
+
+		mov		eax, [esi+ecx*4]
+		call	WriteDec
+
+		mov		al, ' '
+		call	WriteChar
+		call	WriteChar
+
+		inc		ecx
+		cmp		ecx, [ebp+20]
+		je		_jumpNextLine
+		jmp		_displayArrayRow
+
+	_jumpNextLine:
+		mov		ecx, 0
+		add		esi, TEMPS_PER_DAY * TYPE DWORD
+		inc		ebx
+		call	CrLf
+		jmp		_displayArrayRow
+
+	_finished:
+		call	CrLf
+		pop		ebp
+		ret		16
 displayTempArray ENDP
+
+displayTempWithString PROC
+	push	ebp
+	mov		ebp, esp
+
+	mov		edx, [ebp+8]
+	call	WriteString
+	mov		eax, [ebp+12]
+	call	WriteDec
+	call	CrLf
+	call	CrLf
+
+	pop		ebp
+	ret		8
+displayTempWithString ENDP
+
+goodbye PROC
+	push	ebp
+	mov		ebp, esp
+
+	mov		edx, [ebp+8]
+	call	WriteString
+	call	CrLf
+
+	pop		ebp
+	ret		4
+goodbye ENDP
 
 END main
