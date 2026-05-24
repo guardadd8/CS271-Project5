@@ -1,7 +1,7 @@
 TITLE Temperature Statistics Program     (Proj5_guardadd.asm)
 
 ; Author: Daniel Guardado
-; Last Modified:	5/23/2026
+; Last Modified:	5/24/2026
 ; OSU email address: guardadd@oregonstate.edu
 ; Course number/section:   CS271 Section 400
 ; Project Number: 5               Due Date: 5/24/2026
@@ -22,12 +22,12 @@ ARRAYSIZE = DAYS_MEASURED*TEMPS_PER_DAY
 .data
 	intro1			BYTE	"Welcome to Temperature Statistics Program by Daniel Guardado",13,10,13,10,0
 	intro2			BYTE	"This program generates temperature readings depending on the days measured and temperatures collected per day.",13,10
-					BYTE	"Different statistics are then calculated such as the daily highest and lowest temperatures, as well as",13,10
-					BYTE	"the average highest and lowest temperatures. All the temperatures along with the calculated values are ",13,10
+					BYTE	"Different statistics are then calculated such as the daily highest and daily lowest temperatures, as well as the",13,10
+					BYTE	"averages of the highest and lowest temperature sets. All the temperatures along with the calculated values are ",13,10
 					BYTE	"then printed with descriptive titles.",13,10,13,10,0
 	allTempsMsg		BYTE	"Temperature readings (one row is one day):",13,10,0
-	highestTempsMsg	BYTE	"Highest daily temperatures:",13,10,0
-	lowestTempsMsg	BYTE	"Lowest daily temperatures:",13,10,0
+	highestTempsMsg	BYTE	"Highest temperatures of each day:",13,10,0
+	lowestTempsMsg	BYTE	"Lowest temperatures of each day:",13,10,0
 	avgHighTempMsg	BYTE	"The (truncated) average high temperature was: ",0
 	avgLowTempMsg	BYTE	"The (truncated) average low temperature was: ",0
 	goodbyeMsg		BYTE	"Thanks for using Temperature Statistics Program. Goodbye.",0
@@ -40,54 +40,67 @@ ARRAYSIZE = DAYS_MEASURED*TEMPS_PER_DAY
 
 .code
 main PROC
+	; Seed the random number generator.
 	call	Randomize
+
+	; Display introductions.
 	push	OFFSET intro2
 	push	OFFSET intro1
 	call	printGreeting
 
+	; Generate random temperature values between bounds and populate an array with them.
 	push	OFFSET tempArray
 	call	generateTemperatures
 
+	; Find highest temperatures of each day and store them in an array.
 	push	OFFSET dailyHighs
 	push	OFFSET tempArray
 	call	findDailyHighs
 
+	; Find lowest temperatures of each day and store them in an array.
 	push	OFFSET dailyLows
 	push	OFFSET tempArray
 	call	findDailyLows
 
+	; Calculate averages of highest and lowest daily temperatures sets.
 	push	OFFSET averageLow
 	push	OFFSET averageHigh
 	push	OFFSET dailyLows
 	push	OFFSET dailyHighs
 	call	calcAverageLowHighTemps
 
+	; Display array of temperatures collected with description.
 	push	TEMPS_PER_DAY
 	push	DAYS_MEASURED
 	push	OFFSET tempArray
 	push	OFFSET allTempsMsg
 	call	displayTempArray
 
+	; Display highest daily temperatures array with description.
 	push	DAYS_MEASURED
 	push	1
 	push	OFFSET dailyHighs
 	push	OFFSET highestTempsMsg
 	call	displayTempArray
 
+	; Display lowest daily temperatures array with description.
 	push	DAYS_MEASURED
 	push	1
 	push	OFFSET dailyLows
 	push	OFFSET lowestTempsMsg
 	call	displayTempArray
 
+	; Display average of highest daily temperatures with title description.
 	push	averageHigh
 	push	OFFSET avgHighTempMsg
 	call	displayTempWithString
 
+	; Display average of lowest daily temperatures with title description.
 	push	averageLow
 	push	OFFSET avgLowTempMsg
 	call	displayTempWithString
 
+	; Display farewell message.
 	push	OFFSET goodbyeMsg
 	call	goodbye
 

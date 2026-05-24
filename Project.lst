@@ -1,11 +1,11 @@
-Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
+Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/24/26 15:38:54
 7Temperature Statistics Program     (Proj5_guardadd.asm	     Page 1 - 1
 
 
 				TITLE Temperature Statistics Program     (Proj5_guardadd.asm)
 
 				; Author: Daniel Guardado
-				; Last Modified:	5/23/2026
+				; Last Modified:	5/24/2026
 				; OSU email address: guardadd@oregonstate.edu
 				; Course number/section:   CS271 Section 400
 				; Project Number: 5               Due Date: 5/24/2026
@@ -77,7 +77,7 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
 	   64 20 70 65 72
 	   20 64 61 79 2E
 	   0D 0A
- 000000B1  44 69 66 66 65						BYTE	"Different statistics are then calculated such as the daily highest and lowest temperatures, as well as",13,10
+ 000000B1  44 69 66 66 65						BYTE	"Different statistics are then calculated such as the daily highest and daily lowest temperatures, as well as the",13,10
 	   72 65 6E 74 20
 	   73 74 61 74 69
 	   73 74 69 63 73
@@ -91,35 +91,39 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
 	   69 6C 79 20 68
 	   69 67 68 65 73
 	   74 20 61 6E 64
-	   20 6C 6F 77 65
-	   73 74 20 74 65
-	   6D 70 65 72 61
-	   74 75 72 65 73
-	   2C 20 61 73 20
-	   77 65 6C 6C 20
-	   61 73 0D 0A
- 00000119  74 68 65 20 61						BYTE	"the average highest and lowest temperatures. All the temperatures along with the calculated values are ",13,10
-	   76 65 72 61 67
-	   65 20 68 69 67
-	   68 65 73 74 20
-	   61 6E 64 20 6C
-	   6F 77 65 73 74
+	   20 64 61 69 6C
+	   79 20 6C 6F 77
+	   65 73 74 20 74
+	   65 6D 70 65 72
+	   61 74 75 72 65
+	   73 2C 20 61 73
+	   20 77 65 6C 6C
+	   20 61 73 20 74
+	   68 65 0D 0A
+ 00000123  61 76 65 72 61						BYTE	"averages of the highest and lowest temperature sets. All the temperatures along with the calculated values are ",13,10
+	   67 65 73 20 6F
+	   66 20 74 68 65
+	   20 68 69 67 68
+	   65 73 74 20 61
+	   6E 64 20 6C 6F
+	   77 65 73 74 20
+	   74 65 6D 70 65
+	   72 61 74 75 72
+	   65 20 73 65 74
+	   73 2E 20 41 6C
+	   6C 20 74 68 65
 	   20 74 65 6D 70
 	   65 72 61 74 75
-	   72 65 73 2E 20
-	   41 6C 6C 20 74
-	   68 65 20 74 65
-	   6D 70 65 72 61
-	   74 75 72 65 73
-	   20 61 6C 6F 6E
-	   67 20 77 69 74
-	   68 20 74 68 65
-	   20 63 61 6C 63
-	   75 6C 61 74 65
-	   64 20 76 61 6C
-	   75 65 73 20 61
-	   72 65 20 0D 0A
- 00000182  74 68 65 6E 20						BYTE	"then printed with descriptive titles.",13,10,13,10,0
+	   72 65 73 20 61
+	   6C 6F 6E 67 20
+	   77 69 74 68 20
+	   74 68 65 20 63
+	   61 6C 63 75 6C
+	   61 74 65 64 20
+	   76 61 6C 75 65
+	   73 20 61 72 65
+	   20 0D 0A
+ 00000194  74 68 65 6E 20						BYTE	"then printed with descriptive titles.",13,10,13,10,0
 	   70 72 69 6E 74
 	   65 64 20 77 69
 	   74 68 20 64 65
@@ -128,7 +132,7 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
 	   74 69 74 6C 65
 	   73 2E 0D 0A 0D
 	   0A 00
- 000001AC 54 65 6D 70 65		allTempsMsg		BYTE	"Temperature readings (one row is one day):",13,10,0
+ 000001BE 54 65 6D 70 65		allTempsMsg		BYTE	"Temperature readings (one row is one day):",13,10,0
 	   72 61 74 75 72
 	   65 20 72 65 61
 	   64 69 6E 67 73
@@ -137,19 +141,22 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
 	   69 73 20 6F 6E
 	   65 20 64 61 79
 	   29 3A 0D 0A 00
- 000001D9 48 69 67 68 65		highestTempsMsg	BYTE	"Highest daily temperatures:",13,10,0
-	   73 74 20 64 61
-	   69 6C 79 20 74
-	   65 6D 70 65 72
-	   61 74 75 72 65
-	   73 3A 0D 0A 00
- 000001F7 4C 6F 77 65 73		lowestTempsMsg	BYTE	"Lowest daily temperatures:",13,10,0
-	   74 20 64 61 69
-	   6C 79 20 74 65
+ 000001EB 48 69 67 68 65		highestTempsMsg	BYTE	"Highest temperatures of each day:",13,10,0
+	   73 74 20 74 65
 	   6D 70 65 72 61
 	   74 75 72 65 73
-	   3A 0D 0A 00
- 00000214 54 68 65 20 28		avgHighTempMsg	BYTE	"The (truncated) average high temperature was: ",0
+	   20 6F 66 20 65
+	   61 63 68 20 64
+	   61 79 3A 0D 0A
+	   00
+ 0000020F 4C 6F 77 65 73		lowestTempsMsg	BYTE	"Lowest temperatures of each day:",13,10,0
+	   74 20 74 65 6D
+	   70 65 72 61 74
+	   75 72 65 73 20
+	   6F 66 20 65 61
+	   63 68 20 64 61
+	   79 3A 0D 0A 00
+ 00000232 54 68 65 20 28		avgHighTempMsg	BYTE	"The (truncated) average high temperature was: ",0
 	   74 72 75 6E 63
 	   61 74 65 64 29
 	   20 61 76 65 72
@@ -159,7 +166,7 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
 	   61 74 75 72 65
 	   20 77 61 73 3A
 	   20 00
- 00000243 54 68 65 20 28		avgLowTempMsg	BYTE	"The (truncated) average low temperature was: ",0
+ 00000261 54 68 65 20 28		avgLowTempMsg	BYTE	"The (truncated) average low temperature was: ",0
 	   74 72 75 6E 63
 	   61 74 65 64 29
 	   20 61 76 65 72
@@ -169,7 +176,7 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
 	   74 75 72 65 20
 	   77 61 73 3A 20
 	   00
- 00000271 54 68 61 6E 6B		goodbyeMsg		BYTE	"Thanks for using Temperature Statistics Program. Goodbye.",0
+ 0000028F 54 68 61 6E 6B		goodbyeMsg		BYTE	"Thanks for using Temperature Statistics Program. Goodbye.",0
 	   73 20 66 6F 72
 	   20 75 73 69 6E
 	   67 20 54 65 6D
@@ -182,69 +189,82 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
 	   6F 6F 64 62 79
 	   65 2E 00
 
- 000002AB  0000009A [			tempArray		DWORD ARRAYSIZE	DUP(?)		; Holds all generated temps
+ 000002C9  0000009A [			tempArray		DWORD ARRAYSIZE	DUP(?)		; Holds all generated temps
 	    00000000
 	   ]
- 00000513  0000000E [			dailyHighs		DWORD DAYS_MEASURED	DUP(?)	; Holds highest temps
+ 00000531  0000000E [			dailyHighs		DWORD DAYS_MEASURED	DUP(?)	; Holds highest temps
 	    00000000
 	   ]
- 0000054B  0000000E [			dailyLows		DWORD DAYS_MEASURED	DUP(?)	; Holds lowest temps
+ 00000569  0000000E [			dailyLows		DWORD DAYS_MEASURED	DUP(?)	; Holds lowest temps
 	    00000000
 	   ]
- 00000583 00000000			averageHigh 	DWORD ?						; Holds average of highest temps
- 00000587 00000000			averageLow		DWORD ?						; Holds average of lowest temps
+ 000005A1 00000000			averageHigh 	DWORD ?						; Holds average of highest temps
+ 000005A5 00000000			averageLow		DWORD ?						; Holds average of lowest temps
 
  00000000			.code
  00000000			main PROC
+					; Set random seed for random number generator.
  00000000  E8 00000000 E		call	Randomize
+
+					; Display introductions.
  00000005  68 00000041 R		push	OFFSET intro2
  0000000A  68 00000000 R		push	OFFSET intro1
  0000000F  E8 000000AB			call	printGreeting
 
- 00000014  68 000002AB R		push	OFFSET tempArray
+					; Generate random temperature values between bounds and populate an array with them.
+ 00000014  68 000002C9 R		push	OFFSET tempArray
  00000019  E8 000000B8			call	generateTemperatures
 
- 0000001E  68 00000513 R		push	OFFSET dailyHighs
- 00000023  68 000002AB R		push	OFFSET tempArray
+					; Find highest temperatures of each day and store them in an array.
+ 0000001E  68 00000531 R		push	OFFSET dailyHighs
+ 00000023  68 000002C9 R		push	OFFSET tempArray
  00000028  E8 000000CC			call	findDailyHighs
 
- 0000002D  68 0000054B R		push	OFFSET dailyLows
- 00000032  68 000002AB R		push	OFFSET tempArray
+					; Find lowest temperatures of each day and store them in an array.
+ 0000002D  68 00000569 R		push	OFFSET dailyLows
+ 00000032  68 000002C9 R		push	OFFSET tempArray
  00000037  E8 000000FA			call	findDailyLows
 
- 0000003C  68 00000587 R		push	OFFSET averageLow
- 00000041  68 00000583 R		push	OFFSET averageHigh
- 00000046  68 0000054B R		push	OFFSET dailyLows
- 0000004B  68 00000513 R		push	OFFSET dailyHighs
+					; Calculate averages of highest and lowest daily temperatures sets.
+ 0000003C  68 000005A5 R		push	OFFSET averageLow
+ 00000041  68 000005A1 R		push	OFFSET averageHigh
+ 00000046  68 00000569 R		push	OFFSET dailyLows
+ 0000004B  68 00000531 R		push	OFFSET dailyHighs
  00000050  E8 0000011E			call	calcAverageLowHighTemps
 
+					; Display array of temperatures collected with description.
  00000055  6A 0B			push	TEMPS_PER_DAY
  00000057  6A 0E			push	DAYS_MEASURED
- 00000059  68 000002AB R		push	OFFSET tempArray
- 0000005E  68 000001AC R		push	OFFSET allTempsMsg
+ 00000059  68 000002C9 R		push	OFFSET tempArray
+ 0000005E  68 000001BE R		push	OFFSET allTempsMsg
  00000063  E8 0000014A			call	displayTempArray
 
+					; Display highest daily temperatures array with description.
  00000068  6A 0E			push	DAYS_MEASURED
  0000006A  6A 01			push	1
- 0000006C  68 00000513 R		push	OFFSET dailyHighs
- 00000071  68 000001D9 R		push	OFFSET highestTempsMsg
+ 0000006C  68 00000531 R		push	OFFSET dailyHighs
+ 00000071  68 000001EB R		push	OFFSET highestTempsMsg
  00000076  E8 00000137			call	displayTempArray
 
+					; Display lowest daily temperatures array with description.
  0000007B  6A 0E			push	DAYS_MEASURED
  0000007D  6A 01			push	1
- 0000007F  68 0000054B R		push	OFFSET dailyLows
- 00000084  68 000001F7 R		push	OFFSET lowestTempsMsg
+ 0000007F  68 00000569 R		push	OFFSET dailyLows
+ 00000084  68 0000020F R		push	OFFSET lowestTempsMsg
  00000089  E8 00000124			call	displayTempArray
 
- 0000008E  FF 35 00000583 R		push	averageHigh
- 00000094  68 00000214 R		push	OFFSET avgHighTempMsg
+					; Display average of highest daily temperatures with title description.
+ 0000008E  FF 35 000005A1 R		push	averageHigh
+ 00000094  68 00000232 R		push	OFFSET avgHighTempMsg
  00000099  E8 00000165			call	displayTempWithString
 
- 0000009E  FF 35 00000587 R		push	averageLow
- 000000A4  68 00000243 R		push	OFFSET avgLowTempMsg
+					; Display average of lowest daily temperatures with title description.
+ 0000009E  FF 35 000005A5 R		push	averageLow
+ 000000A4  68 00000261 R		push	OFFSET avgLowTempMsg
  000000A9  E8 00000155			call	displayTempWithString
 
- 000000AE  68 00000271 R		push	OFFSET goodbyeMsg
+					; Display farewell message.
+ 000000AE  68 0000028F R		push	OFFSET goodbyeMsg
  000000B3  E8 0000016C			call	goodbye
 
 					Invoke	ExitProcess,0
@@ -621,7 +641,7 @@ Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
  00000238			goodbye ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/23/26 18:13:58
+Microsoft (R) Macro Assembler Version 14.44.35225.0	    05/24/26 15:38:54
 7Temperature Statistics Program     (Proj5_guardadd.asm	     Symbols 2 - 1
 
 
@@ -715,7 +735,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 0000058B Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000005A9 Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 00000238 Para	  Public  'CODE'	
 
 
@@ -1071,22 +1091,22 @@ VK_UP  . . . . . . . . . . . . .	Number	 00000026h
 WINDOW_BUFFER_SIZE_EVENT . . . .	Number	 00000004h   
 WriteConsoleOutputCharacter  . .	Text   	 WriteConsoleOutputCharacterA
 WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
-allTempsMsg  . . . . . . . . . .	Byte	 000001AC _DATA	
-averageHigh  . . . . . . . . . .	DWord	 00000583 _DATA	
-averageLow . . . . . . . . . . .	DWord	 00000587 _DATA	
-avgHighTempMsg . . . . . . . . .	Byte	 00000214 _DATA	
-avgLowTempMsg  . . . . . . . . .	Byte	 00000243 _DATA	
+allTempsMsg  . . . . . . . . . .	Byte	 000001BE _DATA	
+averageHigh  . . . . . . . . . .	DWord	 000005A1 _DATA	
+averageLow . . . . . . . . . . .	DWord	 000005A5 _DATA	
+avgHighTempMsg . . . . . . . . .	Byte	 00000232 _DATA	
+avgLowTempMsg  . . . . . . . . .	Byte	 00000261 _DATA	
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-dailyHighs . . . . . . . . . . .	DWord	 00000513 _DATA	
-dailyLows  . . . . . . . . . . .	DWord	 0000054B _DATA	
+dailyHighs . . . . . . . . . . .	DWord	 00000531 _DATA	
+dailyLows  . . . . . . . . . . .	DWord	 00000569 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
-goodbyeMsg . . . . . . . . . . .	Byte	 00000271 _DATA	
+goodbyeMsg . . . . . . . . . . .	Byte	 0000028F _DATA	
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
-highestTempsMsg  . . . . . . . .	Byte	 000001D9 _DATA	
+highestTempsMsg  . . . . . . . .	Byte	 000001EB _DATA	
 intro1 . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 intro2 . . . . . . . . . . . . .	Byte	 00000041 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
@@ -1095,10 +1115,10 @@ lightGray  . . . . . . . . . . .	Number	 00000007h
 lightGreen . . . . . . . . . . .	Number	 0000000Ah   
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
-lowestTempsMsg . . . . . . . . .	Byte	 000001F7 _DATA	
+lowestTempsMsg . . . . . . . . .	Byte	 0000020F _DATA	
 magenta  . . . . . . . . . . . .	Number	 00000005h   
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-tempArray  . . . . . . . . . . .	DWord	 000002AB _DATA	
+tempArray  . . . . . . . . . . .	DWord	 000002C9 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
